@@ -1,0 +1,36 @@
+<nav class="navbar navbar-default" role="navigation">
+    <ul class="nav navbar-nav">
+        <li><a href="/">Главная</a></li>
+        <% if (user) { %>
+        <li><a href="/chat">Чат</a></li>
+        <li><a href="/canvas">Канвас</a></li>
+        <% } %>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <% if (user) { %>
+        <li><a href="" class="logout">Выйти</a></li>
+        <% } else { %>
+        <li><a href="/login">Войти</a></li>
+        <% } %>
+    </ul>
+</nav>
+<h3><span class="help-block error"></span></h3>
+
+<script>
+    $('.logout').on('click', function() {
+        $('.error').html('');
+        $.ajax({
+            url: '/logout',
+            method: 'POST',
+            data: '',
+            statusCode: {
+                200: function() {
+                    document.location.href = '/';
+                },
+                401: function() {
+                    $('.error').html(err.message);
+                }
+            }
+        });
+    });
+</script>>

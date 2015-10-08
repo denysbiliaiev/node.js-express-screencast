@@ -1,0 +1,70 @@
+<% layout('./layout/page') -%>
+<% block('title', 'canvas') -%>
+
+<script src="/vendor/bower_components/socket.io-client/socket.io.js"></script>
+<script src="/vendor/bower_components/jquery/dist/jquery.event.drag-2.2/jquery.event.drag-2.2.js"></script>
+
+<p class="lead">canvas.ejs</p>
+
+<div id="drawing">
+</div>
+
+<script>
+
+    $(document).ready(function() {
+        App = {};
+        App.socket = io.connect('', { reconnect: false });
+
+        App.init = function() {
+
+            App.canvas = document.createElement('canvas');
+            App.canvas.height = 400;
+            App.canvas.width = 800;
+            App.canvas.id = 'ctx';
+
+            document.getElementById('drawing').appendChild(App.canvas);
+
+            App.ctx = App.canvas.getContext('2d');
+
+            App.ctx.fillStyle = "solid";
+            App.ctx.strokeStyle = "#bada55";
+            App.ctx.lineWidth = 5;
+            App.ctx.lineCap = "round";
+
+            App.draw = function (x, y, type) {
+                if (type == 'dragstart') {
+                    App.ctx.beginPath();
+                    App.ctx.moveTo(x, y);
+                } else if (type == 'drag') {
+                        App.ctx.lineTo(x, y);
+                        App.ctx.stroke();
+                } else {
+                    App.ctx.closePath()
+                }
+            };
+        };
+
+        App.init();
+
+        $('#ctx').bind('draginit dragstart drag dragend', function(e) {
+            type = e.handleObj.type;
+            offset = $(this).offset();
+
+            x = e.clientX - offset.left;
+            y = e.clientY - offset.top;
+
+            App.socket.emit('drawClick', {x: x, y: y, type: type}, function(data) {
+                console.log('data callback ' + data);
+                App.draw(data.x, data.y, data.type);
+            });
+
+            return;
+        });
+
+        App.socket.on('draw', function(data) {
+            App.draw(data.x, data.y, data.type);
+            console.log('data on ' + data);
+        });
+    });
+
+</script>

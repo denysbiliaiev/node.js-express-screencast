@@ -1,0 +1,19 @@
+{
+    "server": {
+        "port": 3000
+    },
+    "mongoose": {
+        "uri": "mongodb://localhost/chat"
+    },
+    "session": {
+        "name": "node",
+        "secret": "s",
+        "saveUninitialized": false,
+        "resave": false,
+        "cookie": {
+            "path": "/",
+            "httpOnly": true,
+            "maxAge": null
+        }
+    }
+}
